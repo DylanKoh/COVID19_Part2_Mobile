@@ -14,12 +14,13 @@
                 HorizontalOptions="CenterAndExpand"
                 IsVisible="True"
                 x:Name="btnUnlock"></Button>
-        <Grid Padding="5" IsVisible="False" x:Name="GridFields">
+        <StackLayout Padding="5" IsVisible="False" x:Name="StackField">
             <Label Text="Username: "/>
-            <Entry Placeholder="Username" x:Name="entryUsername" Grid.Column="1"/>
-            <Label Text="Password: " Grid.Row="1"/>
-            <Entry Placeholder="Password" x:Name="entryPassword" IsPassword="True" Grid.Column="1" Grid.Row="1"/>
-        </Grid>
+            <Entry Placeholder="Username" x:Name="entryUsername"/>
+            <Label Text="Password: " />
+            <Entry Placeholder="Password" x:Name="entryPassword" IsPassword="True"/>
+            <Button x:Name="btnLogin" Clicked="btnLogin_Clicked" Text="Login"/>
+        </StackLayout>
     </StackLayout>
 
 </ContentPage>

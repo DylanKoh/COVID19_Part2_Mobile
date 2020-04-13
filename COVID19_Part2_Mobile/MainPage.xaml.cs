@@ -41,12 +41,45 @@ namespace COVID19_Part2_Mobile
                 else
                 {
                     publicKey = JsonConvert.DeserializeObject<RSAParameters>(Encoding.Default.GetString(response));
-                    await DisplayAlert("Master Login", "Deserialised completed", "Ok");
-                    GridFields.IsVisible = true;
+                    await DisplayAlert("Master Login", "Login successful", "Ok");
+                    StackField.IsVisible = true;
                     btnUnlock.IsVisible = false;
                 }
 
             }
+        }
+
+        private async void btnLogin_Clicked(object sender, EventArgs e)
+        {
+            var username = Convert.FromBase64String(entryUsername.Text);
+            var password = Convert.FromBase64String(entryPassword.Text);
+            var LoginUser = new LoginDetails();
+            using (var rsa = new RSACryptoServiceProvider(2048))
+            {
+                rsa.PersistKeyInCsp = false;
+                rsa.ImportParameters(publicKey);
+                LoginUser.encrytedUsername = Convert.FromBase64String(Convert.ToBase64String(rsa.Encrypt(username, true)));
+                LoginUser.encrytedPassword = Convert.FromBase64String(Convert.ToBase64String(rsa.Encrypt(password, true)));
+                using (var webClient = new WebClient())
+                {
+                    webClient.Headers.Add("Content-Type", "application/json");
+                    var jsonData = JsonConvert.SerializeObject(LoginUser);
+                    var response = await webClient.UploadDataTaskAsync($"http://10.0.2.2:51908/LoginUsers/Login", "POST", Convert.FromBase64String(Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonData))));
+                    if (Encoding.Default.GetString(response) != "\"User not found or credentials are incorrect!\"")
+                    {
+                        await DisplayAlert("Login", "Login successful", "Ok");
+                    }
+                    else
+                    {
+                        await DisplayAlert("Login", "Login unsuccessful! Please check your credentials", "Ok");
+                    }
+                }
+            }
+        }
+        private class LoginDetails
+        {
+            public byte[] encrytedUsername { get; set; }
+            public byte[] encrytedPassword { get; set; }
         }
     }
 }
