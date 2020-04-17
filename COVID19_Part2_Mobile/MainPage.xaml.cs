@@ -58,13 +58,13 @@ namespace COVID19_Part2_Mobile
             {
                 rsa.PersistKeyInCsp = false;
                 rsa.ImportParameters(publicKey);
-                LoginUser.encrytedUsername = Convert.FromBase64String(Convert.ToBase64String(rsa.Encrypt(username, true)));
-                LoginUser.encrytedPassword = Convert.FromBase64String(Convert.ToBase64String(rsa.Encrypt(password, true)));
+                LoginUser.encrytedUsername = rsa.Encrypt(username, true);
+                LoginUser.encrytedPassword = rsa.Encrypt(password, true);
                 using (var webClient = new WebClient())
                 {
                     webClient.Headers.Add("Content-Type", "application/json");
                     var jsonData = JsonConvert.SerializeObject(LoginUser);
-                    var response = await webClient.UploadDataTaskAsync($"http://10.0.2.2:51908/LoginUsers/Login", "POST", Convert.FromBase64String(Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonData))));
+                    var response = await webClient.UploadDataTaskAsync($"http://10.0.2.2:51908/LoginUsers/Login", "POST", Encoding.UTF8.GetBytes(jsonData));
                     if (Encoding.Default.GetString(response) != "\"User not found or credentials are incorrect!\"")
                     {
                         await DisplayAlert("Login", "Login successful", "Ok");
